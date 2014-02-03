@@ -134,23 +134,14 @@ def cp
   docker_cmd("cp #{current_resource.id}:#{new_resource.source} #{new_resource.destination}")
 end
 
-def docker_cmd(cmd, timeout = new_resource.cmd_timeout)
-  execute_cmd('docker ' + cmd, timeout)
-end
-
-def execute_cmd(cmd, timeout = new_resource.cmd_timeout)
-  Chef::Log.debug('Executing: ' + cmd)
-  begin
-    shell_out(cmd, :timeout => timeout)
-  rescue Mixlib::ShellOut::CommandTimeout
-    raise CommandTimeout, <<-EOM
+def command_timeout_error_message
+  <<-EOM
 
 Command timed out:
 #{cmd}
 
 Please adjust node container_cmd_timeout attribute or this docker_container cmd_timeout attribute if necessary.
 EOM
-  end
 end
 
 def exists?
