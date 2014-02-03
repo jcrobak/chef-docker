@@ -7,7 +7,7 @@ class CommandTimeout < RuntimeError; end
 def load_current_resource
   wait_until_ready!
   @current_resource = Chef::Resource::DockerImage.new(new_resource)
-  di = docker_cmd('images -a')
+  di = docker_cmd!('images -a')
   if di.stdout.include?(new_resource.image_name)
     di.stdout.each_line do |di_line|
       next unless di_line.include?(new_resource.image_name)
@@ -111,7 +111,7 @@ def build
     command = new_resource.source
   end
 
-  docker_cmd("build #{build_args} #{command}")
+  docker_cmd!("build #{build_args} #{command}")
 end
 
 def command_timeout_error_message
@@ -139,12 +139,12 @@ def import
       import_args += new_resource.source
       import_args += " #{new_resource.image_name}"
     end
-    docker_cmd("import #{import_args} #{repository_and_tag_args}")
+    docker_cmd!("import #{import_args} #{repository_and_tag_args}")
   end
 end
 
 def insert
-  docker_cmd("insert #{new_resource.image_name} #{new_resource.source} #{new_resource.destination}")
+  docker_cmd!("insert #{new_resource.image_name} #{new_resource.source} #{new_resource.destination}")
 end
 
 def installed?
@@ -152,7 +152,7 @@ def installed?
 end
 
 def load
-  docker_cmd("load < #{new_resource.source}")
+  docker_cmd!("load < #{new_resource.source}")
 end
 
 def pull
@@ -160,15 +160,15 @@ def pull
     'registry' => new_resource.registry,
     't' => new_resource.tag
   )
-  docker_cmd("pull #{new_resource.image_name} #{pull_args}")
+  docker_cmd!("pull #{new_resource.image_name} #{pull_args}")
 end
 
 def push
-  docker_cmd("push #{new_resource.image_name}")
+  docker_cmd!("push #{new_resource.image_name}")
 end
 
 def remove
-  docker_cmd("rmi #{new_resource.image_name}")
+  docker_cmd!("rmi #{new_resource.image_name}")
 end
 
 def repository_and_tag_args
@@ -181,14 +181,14 @@ def repository_and_tag_args
 end
 
 def save
-  docker_cmd("save #{new_resource.image_name} > #{new_resource.destination}")
+  docker_cmd!("save #{new_resource.image_name} > #{new_resource.destination}")
 end
 
 def tag
   tag_args = cli_args(
     'f' => new_resource.force
   )
-  docker_cmd("tag #{tag_args} #{new_resource.image_name} #{repository_and_tag_args}")
+  docker_cmd!("tag #{tag_args} #{new_resource.image_name} #{repository_and_tag_args}")
 end
 
 def tag_match
